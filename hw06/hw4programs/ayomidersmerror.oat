@@ -1,0 +1,36 @@
+int average(int a,int b,int c,int d,int e){
+   var x= (a+b+c)*5;
+    var y= (d+e)*5;
+    return x+y;
+}
+
+int square(int a){
+    return a*a;
+}
+
+int rsm_error (int a,int b,int c,int d,int e){
+    var xm = average(a,b,c,d,e);
+    var y = a - xm;
+     var z = b -xm;
+    var g = c -xm;
+   var h = d -xm;
+   var k = e -xm;
+    
+  var  l = square(y);
+   var m = square(z);
+  var  n = square(g);
+  var  p = square(h);
+  var  q = square(k);
+
+  var rsm = average(l,m,n,p,q);
+  return rsm;
+}
+
+int program(int argc, string[] argv) {
+    var x = 0; var ans =0; var z =0;
+    for (var i = 0; i < 10000000; i = i + 1;){
+        var w = x+i;
+var ans1 = rsm_error(w,w,w,w,w);}
+var final = ans + z;
+return final;
+}
