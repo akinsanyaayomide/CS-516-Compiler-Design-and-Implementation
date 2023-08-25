@@ -1,0 +1,150 @@
+/*
+ * Mihai Nicola
+ */
+
+/* 
+let provided_tests : suite = [
+  Test("balanced red-black tree", Gradedtests.executed_oat_file [
+     ("hwprograms_student/balanced_btree_by_Mihai_Nicola.oat", "15", "INPUT:20[Black](10[Black](5[Red],15[Red]),30[Black](25[Red],35[Red]))>>>OUTPUT:15[Black](5[Black](3[Black],10[Black]),20[Black](17[Black],30[Black](25[Red],35[Red])))15")
+   ])  
+  ]  
+*/
+
+/** 
+  Invariants: 
+  - Nodes in the tree are colored either Black or Red
+  - Root is always Black
+  - Every null node (Nil) is colored Black
+  - All children of a Red node are Black  
+  - All paths to leaves have the same number of black nodes
+
+  Colors are encoded as integers with the following values:
+  - Red = 0
+  - Black = 1 (conventional is 1, but can be any integer except 0)
+*/
+
+struct T { int val; int color; T? left; T? right }
+
+void print_tree(T tree){
+  print_string(string_of_int(tree.val));
+  if (tree.color == 0) {    
+    print_string("[Red]");
+  } else {
+    print_string("[Black]");
+  }
+  if((tree.left != T null) | (tree.right != T null)) {
+    print_string("(");
+  }
+  if?(T n = tree.left) {print_tree(n);}
+  if((tree.left != T null) | (tree.right != T null)) {
+    print_string(",");
+  }
+  if?(T n = tree.right) {print_tree(n);}
+  if((tree.left != T null) | (tree.right != T null)) {
+    print_string(")");
+  }
+  return;
+}
+
+T balance(T btree) {
+  /* we need to be handle 4 cases that consider 3 successor levels: 
+     1. B -> left (R) -> left (R)
+     2. B -> left (R) -> right (R)
+     3. B -> right (R) -> left (R)
+     4. B -> right (R) -> right (R)
+     we don't touch other nodes arrangements
+  */
+  
+  var res = btree;
+  
+  if?(T l = btree.left) {
+    /* case 1. */
+    if?(T gl = l.left) {
+      if((btree.color != 0) & (l.color == 0) & (gl.color == 0)) {
+        res = l;
+        btree.left = l.right;
+        l.right = btree;
+        gl.color = 1;
+      }
+    }
+    /* case 2. */
+    if?(T gl = l.right) {
+      if((btree.color != 0) & (l.color == 0) & (gl.color == 0)) {
+        res = gl;
+        l.right = gl.right;
+        btree.left = gl.left;        
+        gl.left = l;
+        gl.right = btree;
+        l.color = 1;
+      }
+    }
+  }
+  if?(T l = btree.right) {
+    /* case 3 */
+    if?(T gl = l.left) {
+      if((btree.color != 0) & (l.color == 0) & (gl.color == 0)) {
+        res = gl;
+        l.left = gl.left;
+        btree.right = gl.right;
+        gl.right = l;
+        gl.left = btree; 
+        l.color = 1;             
+      }
+    }
+    /* case 4 */
+    if?(T gl = l.right) {
+      if((btree.color != 0) & (l.color == 0) & (gl.color == 0)) {
+        res = l;
+        btree.right = l.left;
+        l.left = btree;
+        gl.color = 1;
+      }
+    }
+  }
+  return res;
+}
+
+T insert(T btree, int newval) {
+  /* insert new node with a Red label; and then rearrange the subtree*/
+  if((newval < btree.val)) {
+    if?(T n = btree.left) {    
+      btree.left = insert(n, newval);
+      btree = balance(btree);
+    } else {
+      btree.left = new T{ val = newval; color = 0; left = T null; right = T null };
+    }
+  } else if((newval > btree.val)) {
+     if?(T n = btree.right) {
+      btree.right = insert(n, newval);
+      btree = balance(btree);
+    } else {
+      btree.right = new T{ val = newval; color = 0; left = T null; right = T null };
+    }
+  } 
+  return btree;
+}
+
+int program(int argc, string[] argv) {
+  var t = new T{ val = 20; color = 1; 
+            left = new T{ val = 10; color = 1;
+              left  = new T{ val = 5; color = 0; left = T null; right = T null };
+              right = new T{ val = 15; color = 0; left = T null; right = T null }
+            };
+            right = new T{ val = 30; color = 1;
+              left = new T{ val = 25; color = 0; left = T null; right = T null };
+              right = new T{ val = 35; color = 0; left = T null; right = T null }                              
+            }
+          };
+ 
+  print_string("INPUT:");
+  print_tree(t);
+              
+  var newT = insert(t, 17);
+  newT = insert(newT, 3);
+  newT.color = 1;
+
+  print_string(">>>OUTPUT:");
+  print_tree(newT);
+  
+  return newT.val;
+}
