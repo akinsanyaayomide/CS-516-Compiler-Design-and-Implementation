@@ -1,0 +1,16 @@
+int power (int x, int y) {
+    var result = 0;
+    if (y == 0) { 
+        result = 1;
+    } else {
+
+        result = x * power (x, y-1);
+    }
+    return result;
+}
+
+int program (int argc, string[] argv) {
+    var x= 3;
+    var y = 4;
+    return power (x,y);
+}
